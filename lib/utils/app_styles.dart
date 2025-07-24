@@ -34,6 +34,11 @@ class AppStyles {
       fontWeight: FontWeight.w500,
       color: AppColors.primaryColor
   );
+  static TextStyle med16black = GoogleFonts.inter(
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
+      color: AppColors.blackColor
+  );
   static TextStyle reg20white = GoogleFonts.inter(
       fontSize: 20,
       fontWeight: FontWeight.normal,
@@ -90,11 +95,7 @@ class AppStyles {
       fontWeight: FontWeight.bold,
       color: AppColors.blackColor
   );
-  static TextStyle med16black = GoogleFonts.inter(
-      fontSize: 16,
-      fontWeight: FontWeight.w500,
-      color: AppColors.blackColor
-  );
+
   static TextStyle bold20primary = GoogleFonts.inter(
       fontSize: 20,
       fontWeight: FontWeight.bold,

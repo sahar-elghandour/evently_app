@@ -1,13 +1,20 @@
 import 'package:evently_app/Ui/home/taps/widgets/custom_elevated_button.dart';
 import 'package:evently_app/Ui/home/taps/widgets/custom_text_form_field.dart';
+import 'package:evently_app/firebase_utils.dart';
+import 'package:evently_app/providers/event_list_provider.dart';
+import 'package:evently_app/providers/user_provider.dart';
 import 'package:evently_app/utils/app_assets.dart';
 import 'package:evently_app/utils/app_colors.dart';
 import 'package:evently_app/utils/app_routes.dart';
 import 'package:evently_app/utils/app_styles.dart';
+import 'package:evently_app/utils/dialog_utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
+import '../../../model/my_user.dart';
 import '../../../providers/app_language_provider.dart';
 import '../../../providers/app_theme_provider.dart';
 class LoginScreen extends StatefulWidget {
@@ -119,7 +126,10 @@ var formKey = GlobalKey<FormState>();
                       color: AppColors.primaryColor,))
                   ],),
                   SizedBox(height: height*.02,),
-                  CustomElevatedButton(onPressed:(){},text: AppLocalizations.of(context)!.login_google,
+                  CustomElevatedButton(onPressed:(){
+                    loginWithGoogle();
+
+                  },text: AppLocalizations.of(context)!.login_google,
                     textStyle: AppStyles.med20primary,backgroundColorButton: AppColors.transparentColor,icon: true,iconName: AppAssets.google,)
          ,           SizedBox(height: height*.04,)
                     , Align(alignment: Alignment.center,
@@ -187,10 +197,102 @@ var formKey = GlobalKey<FormState>();
     );
   }
 
-  void login() {
+  Future<void> login() async {
     if(formKey.currentState?.validate()==true){
-    Navigator.of(context).pushNamed(AppRoutes.homeRouteName);}
+      DialogUtils.showLopading(textLoading: 'Loading...', context: context);
+      try {
+        //todo:sign in firebase auth
+        final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: emailController.text,
+            password: passwordController.text
+        );
+        //todo:read user from firestore
+        var user =await FirebaseUtils.readUserFromFireStore(credential.user?.uid??'');
+        if(user == null){
+          return;
+        }
+        //todo:save user in provider
+        var userProvider = Provider.of<UserProvider>(context,listen: false);
+        userProvider.updateUser(user);
+        var eventListProvider = Provider.of<EventListProvider>(context,listen: false);
+       eventListProvider.changeSelectedIndex(0, userProvider.currentUser!.id);
+        eventListProvider.getAllFavEventsFromFirebase(userProvider.currentUser!.id);
+       //todo:hide loading
+        DialogUtils.hideLoading(context: context);
+        //todo:show Msg
+        DialogUtils.showMsg(context: context, msg:'login successfully',
+            title: 'success',posActionName: 'ok' ,posAction: (){
+          Navigator.pushReplacementNamed(context, AppRoutes.homeRouteName);
+            });
+        print('id:${credential.user?.uid ?? ''}');
+      } on FirebaseAuthException catch (e) {
+           if(e.code =='invalid-credential'){
+             DialogUtils.hideLoading(context: context);
+             DialogUtils.showMsg(context: context,
+                 msg:'The supplied auth credential is incorrect or has expired.'
+                 ,title: 'Error',posActionName: 'ok' );
 
-
+           }
+      }catch(e){
+        DialogUtils.hideLoading(context: context);
+        DialogUtils.showMsg(context: context,title: 'Etrror',posActionName: 'ok', msg:e.toString());
+        print(e.toString());
+      }
+    }
   }
+Future<void> loginWithGoogle() async {
+  try {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    if (googleUser == null) return;
+
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+    final OAuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    final UserCredential userCredential =
+    await FirebaseAuth.instance.signInWithCredential(credential);
+
+
+    MyUser? user = await FirebaseUtils.readUserFromFireStore(userCredential.user!.uid);
+
+    if (user == null) {
+      MyUser newUser = MyUser(
+        id: userCredential.user!.uid,
+        name: userCredential.user!.displayName ?? '',
+        email: userCredential.user!.email ?? '',
+      );
+
+      await FirebaseUtils.addUserToFireStore(newUser);
+      user = newUser;
+    }
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    userProvider.updateUser(user);
+
+    final eventListProvider = Provider.of<EventListProvider>(context, listen: false);
+    eventListProvider.changeSelectedIndex(0, userProvider.currentUser!.id);
+    eventListProvider.getAllFavEventsFromFirebase(userProvider.currentUser!.id);
+
+    DialogUtils.showMsg(
+      context: context,
+      msg: 'Login with Google successful',
+      title: 'Success',
+      posActionName: 'OK',
+      posAction: () {
+        Navigator.pushReplacementNamed(context, AppRoutes.homeRouteName);
+      },
+    );
+  } catch (e) {
+    print(e.toString());
+    DialogUtils.showMsg(
+      context: context,
+      title: 'Error',
+      msg: e.toString(),
+      posActionName: 'OK',
+    );
+  }
+}
 }

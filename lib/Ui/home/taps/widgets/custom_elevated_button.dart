@@ -13,9 +13,13 @@ class CustomElevatedButton extends StatelessWidget {
   String? iconName;
   MainAxisAlignment? mainAxisAlignment;
   num iconPadding;
-   CustomElevatedButton({super.key,this.onPressed,this.text,
-     this.backgroundColorButton=AppColors.primaryColor,
-     this.colorSide,this.textStyle,this.iconPadding=0,this.icon=false,this.iconName,this.mainAxisAlignment});
+  IconData? suffixIconName;
+   double space ;
+  String? text2;
+  bool istext2;
+   CustomElevatedButton({super.key,this.onPressed,this.text,this.istext2=false,
+     this.backgroundColorButton=AppColors.primaryColor,this.text2,
+     this.colorSide,this.space =.01,this.textStyle,this.iconPadding=0,this.suffixIconName,this.icon=false,this.iconName,this.mainAxisAlignment});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +45,15 @@ class CustomElevatedButton extends StatelessWidget {
             child: Image(image: AssetImage(iconName!)),
           ),
           SizedBox(width: width*.02,),
-          Text(text!,style:textStyle ?? AppStyles.med20white ,)
+          istext2?
+          Column(crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(text!,style:textStyle ?? AppStyles.med20white ,),
+              Text(text2??'',style: AppStyles.bold14black ,),
+            ],
+          ):Text(text!,style:textStyle ?? AppStyles.med20white ,),
+            SizedBox(width: width* space )
+            ,Icon(suffixIconName,color: AppColors.primaryColor,)
         ],):
         Text(text!,style:textStyle ?? AppStyles.med20white ,)
     );

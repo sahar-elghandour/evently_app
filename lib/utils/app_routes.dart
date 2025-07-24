@@ -7,5 +7,9 @@ class AppRoutes {
   static const String loginRouteName ='login';
   static const String registerRouteName ='register';
   static const String splashRouteName ='splash';
+  static const String addEventRouteName ='add_event';
+  static const String eventDetailsRouteName ='event_details';
+  static const String editEventRouteName ='edit_event';
+
 
 }

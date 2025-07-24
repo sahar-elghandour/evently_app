@@ -1,3 +1,4 @@
+import 'package:evently_app/utils/app_assets.dart';
 import 'package:evently_app/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'app_styles.dart';
@@ -34,7 +35,8 @@ textTheme: TextTheme(
   headlineLarge: AppStyles.bold20black,
   headlineMedium: AppStyles.med16primary,
   headlineSmall: AppStyles.bold14primary,
-  titleMedium: AppStyles.med16white
+  titleMedium: AppStyles.med16white,
+  titleLarge: AppStyles.med16black
 )
   );
   static final ThemeData darkTheme=ThemeData(
@@ -64,7 +66,8 @@ textTheme: TextTheme(
           headlineLarge: AppStyles.bold20white,
           headlineSmall: AppStyles.bold14darkPrimary,
         headlineMedium: AppStyles.med16white,
-          titleMedium: AppStyles.med16white
+          titleMedium: AppStyles.med16white,
+          titleLarge: AppStyles.med16white
       )
   );
 }

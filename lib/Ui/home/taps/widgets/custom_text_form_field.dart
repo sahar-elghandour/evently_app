@@ -17,10 +17,11 @@ class  CustomTextFormField extends StatelessWidget {
   TextEditingController? controller;
   bool? obscureText;
   String? obscuringCharacter;
+  int? maxLines;
    CustomTextFormField ({super.key,this.borderSideColor=AppColors.greyColor,
      this.prefixIcon,this.suffixIcon,this.hintText,this.hintStyle,
      this.labelText,this.labelStyle,this.kerboardType,this.validator,
-     required this.controller,this.obscureText=false,this.obscuringCharacter});
+     required this.controller,this.obscureText=false,this.obscuringCharacter,this.maxLines});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +46,7 @@ class  CustomTextFormField extends StatelessWidget {
       obscuringCharacter:obscuringCharacter ?? "." ,
       style: TextStyle(
         color: themeProvider.appTheme==ThemeMode.light?AppColors.greyColor:AppColors.whiteColor
-      ),
+      ),maxLines: maxLines ??1,
     );
   }
   OutlineInputBorder buildOutlineInputBorder({ required borderSideColor}){

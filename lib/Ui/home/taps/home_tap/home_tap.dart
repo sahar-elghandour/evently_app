@@ -1,5 +1,6 @@
 import 'package:evently_app/Ui/home/taps/home_tap/event_tap_item.dart';
 import 'package:evently_app/Ui/home/taps/home_tap/widget/event_item.dart';
+import 'package:evently_app/providers/event_list_provider.dart';
 import 'package:evently_app/utils/app_assets.dart';
 import 'package:evently_app/utils/app_colors.dart';
 import 'package:evently_app/utils/app_styles.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../providers/app_theme_provider.dart';
+import '../../../../providers/user_provider.dart';
 
 class HomeTap extends StatefulWidget{
   @override
@@ -15,22 +17,17 @@ class HomeTap extends StatefulWidget{
 }
 
 class _HomeTapState extends State<HomeTap> {
-  int selectedIndex=0;
+  late EventListProvider eventListProvider;
+
 
   @override
   Widget build(BuildContext context) {
-    List<String> eventNameList=[
-      AppLocalizations.of(context)!.all,
-      AppLocalizations.of(context)!.sport,
-      AppLocalizations.of(context)!.birthday,
-      AppLocalizations.of(context)!.meeting,
-      AppLocalizations.of(context)!.gaming,
-      AppLocalizations.of(context)!.workshop,
-      AppLocalizations.of(context)!.bookClub,
-      AppLocalizations.of(context)!.exhibition,
-      AppLocalizations.of(context)!.holiday,
-      AppLocalizations.of(context)!.eating,
-    ];
+    var userProvider = Provider.of<UserProvider>(context);
+   eventListProvider=Provider.of<EventListProvider>(context);
+    //if(eventListProvider.eventList.isEmpty){
+     // eventListProvider.getALLEvents(userProvider.currentUser!.id);
+    //}
+   eventListProvider.getEventNameList(context);
     var width =   MediaQuery.of(context).size.width;
     var height =   MediaQuery.of(context).size.height;
     var themeProvider = Provider.of<ThemeProvider>(context);
@@ -43,7 +40,7 @@ class _HomeTapState extends State<HomeTap> {
           Column(crossAxisAlignment: CrossAxisAlignment.start,
             children: [
             Text(AppLocalizations.of(context)!.welcome_back,style: AppStyles.reg16white,),
-            Text('John Safwat',style: AppStyles.bold24white,)
+            Text(userProvider.currentUser!.name,style: AppStyles.bold24white,)
           ],),Spacer(),
           IconButton(onPressed: (){}, icon:Image.asset(AppAssets.themeIcon)),
           Container(padding: EdgeInsets.symmetric(horizontal: width*.016,vertical: height*.008),
@@ -62,7 +59,7 @@ class _HomeTapState extends State<HomeTap> {
           Row(children: [
             ImageIcon(AssetImage(AppAssets.unSelectedMapIcon,),size:40),
             Text('Cairo,Egypt',style: AppStyles.med16white,)
-          ],),DefaultTabController(length: eventNameList.length, child:
+          ],),DefaultTabController(length: eventListProvider.eventNameList.length, child:
           TabBar(
             isScrollable: true,
               tabAlignment:TabAlignment.start ,
@@ -70,28 +67,31 @@ class _HomeTapState extends State<HomeTap> {
               labelPadding: EdgeInsets.zero,
               dividerColor: AppColors.transparentColor,
               onTap: (index){
-             selectedIndex=index;
-             setState(() {
-             });
+            eventListProvider.changeSelectedIndex(index,userProvider.currentUser!.id);
             }
-          , tabs:eventNameList.map((eventName) {
-            return EventTapItem(isSelected:selectedIndex==eventNameList.indexOf(eventName) , text: eventName);
+          , tabs:eventListProvider.eventNameList.map((eventName) {
+            return EventTapItem(isSelected:eventListProvider.selectedIndex==eventListProvider.eventNameList.indexOf(eventName) ,
+              text: eventName,selectedBgColor: Theme.of(context).focusColor,
+              selectedText: Theme.of(context).textTheme.headlineMedium,
+              unSelectedText:Theme.of(context).textTheme.titleMedium,);
           },).toList()
           ))
         ],),
       ),
       ),
       body: Column(
-        children: [
+        children:[
           Expanded(
-              child: ListView.separated(
+              child: eventListProvider.filterEventList.isEmpty?
+            Center(child: Text("No events added"),): 
+         ListView.separated(
                   padding: EdgeInsets.only(top: height*.02),
               itemBuilder: (context, index) {
-                return EventItem();
+                return EventItem(event:eventListProvider.filterEventList[index] ,);
               }
               , separatorBuilder: (context, index) {
                 return SizedBox(height: height*.001,);              },
-              itemCount: 20))
+              itemCount: eventListProvider.filterEventList.length))
         ],
       ),
     );

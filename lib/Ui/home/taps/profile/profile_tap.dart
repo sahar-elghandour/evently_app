@@ -1,8 +1,10 @@
 import 'package:evently_app/Ui/home/taps/profile/language/language_bottom_sheet.dart';
 import 'package:evently_app/Ui/home/taps/profile/theme/theme_bottom_sheet.dart';
 import 'package:evently_app/Ui/home/taps/widgets/custom_elevated_button.dart';
+import 'package:evently_app/providers/event_list_provider.dart';
 import 'package:evently_app/utils/app_assets.dart';
 import 'package:evently_app/utils/app_colors.dart';
+import 'package:evently_app/utils/app_routes.dart';
 import 'package:evently_app/utils/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -10,6 +12,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../providers/app_language_provider.dart';
 import '../../../../providers/app_theme_provider.dart';
+import '../../../../providers/user_provider.dart';
 class ProfileTap extends StatefulWidget{
   @override
   State<ProfileTap> createState() => _ProfileTapState();
@@ -18,8 +21,10 @@ class ProfileTap extends StatefulWidget{
 class _ProfileTapState extends State<ProfileTap> {
   @override
   Widget build(BuildContext context) {
+    var userProvider = Provider.of<UserProvider>(context);
     var themeProvider = Provider.of<ThemeProvider>(context);
     var languageProvider = Provider.of<LanguageProvider>(context);
+    var eventListProvider = Provider.of<EventListProvider>(context);
     var width =   MediaQuery.of(context).size.width;
     var height =   MediaQuery.of(context).size.height;
    return Scaffold(
@@ -33,8 +38,8 @@ class _ProfileTapState extends State<ProfileTap> {
          SizedBox(width: width*.04,)
          ,Column(crossAxisAlignment: CrossAxisAlignment.start,
            children: [
-           Text('John Safwat',style: AppStyles.bold24white,),
-           Text('johnsafwat.route\n@gmail.com',style: AppStyles.med16white,)
+           Text(userProvider.currentUser!.name,style: AppStyles.bold24white,),
+           Text(userProvider.currentUser!.email,style: AppStyles.med16white,)
          ],)
          
        ],),
@@ -86,9 +91,16 @@ class _ProfileTapState extends State<ProfileTap> {
                    ],
                  ),
                )),Spacer(),
-           CustomElevatedButton(onPressed:(){},mainAxisAlignment:MainAxisAlignment.start,backgroundColorButton: AppColors.redColor,
-             icon: true,colorSide: AppColors.redColor,iconPadding: .03,
-             iconName: AppAssets.logoutIcon,textStyle: AppStyles.reg20white,text: 'Logout',)
+           Padding(
+             padding:  EdgeInsets.symmetric(vertical: height*.02),
+             child: CustomElevatedButton(onPressed:(){
+
+               Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.loginRouteName, (route)=>false);
+             },
+                 mainAxisAlignment:MainAxisAlignment.start,backgroundColorButton: AppColors.redColor,
+               icon: true,colorSide: AppColors.redColor,iconPadding: .03,
+               iconName: AppAssets.logoutIcon,textStyle: AppStyles.reg20white,text: AppLocalizations.of(context)!.logout),
+           )
 
          ],
        ),

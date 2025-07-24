@@ -52,6 +52,18 @@
              "pass_should_equal_repass": "كلمة المرور وتأكيد كلمة المرور يجب أن يتطابقا",
              "have_account":"لدي حساب بالفعل",
              "register": "تسجيل",
-             "welcome_back": "اهلا بعودتك"
+             "welcome_back": "اهلا بعودتك",
+             "create_event": "إنشاء حدث",
+               "title": "العنوان",
+               "description": "الوصف",
+               "event_title": "عنوان الحدث",
+               "event_description": "وصف الحدث",
+               "event_date": "تاريخ الحدث",
+               "event_time": "وقت الحدث",
+               "choose_date": "اختر التاريخ",
+               "choose_time": "اختر الوقت",
+               "location": "الموقع",
+               "choose_event_location": "اختر موقع الحدث",
+               "add_event": "إضافة حدث"
 
 }

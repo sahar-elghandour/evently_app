@@ -4,7 +4,12 @@ import 'package:flutter/material.dart';
 class EventTapItem extends StatelessWidget{
   bool isSelected;
   String text;
-  EventTapItem({required this.isSelected,required this.text});
+  Color? selectedBgColor;
+  Color? borderColor;
+  TextStyle? selectedText;
+  TextStyle? unSelectedText;
+  EventTapItem({required this.isSelected,required this.text,
+    this.selectedBgColor,this.borderColor,this.selectedText,this.unSelectedText});
   @override
   Widget build(BuildContext context) {
     var width =   MediaQuery.of(context).size.width;
@@ -14,13 +19,13 @@ class EventTapItem extends StatelessWidget{
       padding: EdgeInsets.symmetric(horizontal: width*.03,vertical: height*.001),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(46),
-        color: isSelected?Theme.of(context).focusColor:AppColors.transparentColor,
+        color: isSelected?selectedBgColor:AppColors.transparentColor,
         border: Border.all(
           width: 2,
-          color: Theme.of(context).focusColor
+          color: borderColor ??Theme.of(context).focusColor
         )
       ),
-      child: Text(text,style: isSelected?Theme.of(context).textTheme.headlineMedium:Theme.of(context).textTheme.titleMedium),
+      child: Text(text,style: isSelected?selectedText:unSelectedText),
     );
   }
   

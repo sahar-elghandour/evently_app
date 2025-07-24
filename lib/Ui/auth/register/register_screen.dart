@@ -1,14 +1,20 @@
 import 'package:evently_app/Ui/home/taps/widgets/custom_elevated_button.dart';
 import 'package:evently_app/Ui/home/taps/widgets/custom_text_form_field.dart';
+import 'package:evently_app/firebase_utils.dart';
+import 'package:evently_app/model/my_user.dart';
 import 'package:evently_app/utils/app_assets.dart';
 import 'package:evently_app/utils/app_colors.dart';
 import 'package:evently_app/utils/app_styles.dart';
+import 'package:evently_app/utils/dialog_utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/app_language_provider.dart';
 import '../../../providers/app_theme_provider.dart';
+import '../../../providers/event_list_provider.dart';
+import '../../../providers/user_provider.dart';
 import '../../../utils/app_routes.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -208,9 +214,49 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void register() {
+  Future<void> register() async {
     if(formKey.currentState?.validate()==true){
-    Navigator.of(context).pushNamed(AppRoutes.homeRouteName);
+      DialogUtils.showLopading(textLoading: 'loading...', context: context);
+      try {
+        //todo:sign up  to firebase auth
+        final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+        //todo:save user to firestore
+        MyUser myUser=MyUser(id: credential.user?.uid??'',
+            name: nameController.text,
+            email: emailController.text);
+        await FirebaseUtils.addUserToFireStore(myUser);
+
+        //todo:save user in provider
+        var userProvider = Provider.of<UserProvider>(context,listen: false);
+        userProvider.updateUser(myUser);
+        var eventListProvider = Provider.of<EventListProvider>(context,listen: false);
+        eventListProvider.changeSelectedIndex(0, userProvider.currentUser!.id);
+        eventListProvider.getAllFavEventsFromFirebase(userProvider.currentUser!.id);
+        //todo:hide loading
+        DialogUtils.hideLoading(context: context);
+        //todo:show Msg
+        DialogUtils.showMsg(context: context, msg: 'Register Successfully'
+        ,title: 'success',posActionName: 'ok',posAction:(){
+              Navigator.pushNamedAndRemoveUntil(context,AppRoutes.homeRouteName,(route)=>false);
+            } );
+        print('register successfully');
+        print('id:${credential.user?.uid ?? ''}');
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          DialogUtils.hideLoading(context: context);
+          DialogUtils.showMsg(context: context,title: 'Error',posActionName: 'ok',msg: 'The password provided is too weak.');
+        } else if (e.code == 'email-already-in-use') {
+          DialogUtils.hideLoading(context: context);
+          DialogUtils.showMsg(context: context, title: 'Error',posActionName: 'ok',msg:'The account already exists for that email.' );
+        }
+      } catch (e) {
+        DialogUtils.hideLoading(context: context);
+        DialogUtils.showMsg(context: context,title: 'Error',posActionName: 'ok', msg:e.toString() );
+        print(e);
+      }
     }
 
   }
