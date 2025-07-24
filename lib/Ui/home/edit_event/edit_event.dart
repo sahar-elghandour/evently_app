@@ -14,6 +14,7 @@ import '../../../utils/app_assets.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_routes.dart';
 import '../../../utils/app_styles.dart';
+import '../../../utils/toast_utils.dart';
 import '../add_event/widgets/date_or_time_widget.dart';
 import '../taps/home_tap/event_tap_item.dart';
 import '../taps/home_tap/home_tap.dart';
@@ -52,7 +53,8 @@ class _EditEventScreenState extends State<EditEvent> {
     descriptionController = TextEditingController(text: event.description);
 
     selectedDate = event.dateTime;
-    selectedTime = TimeOfDay.fromDateTime(event.dateTime);
+    selectedTime =parseTime(event.time);
+        //TimeOfDay.fromDateTime(event.dateTime);
     selectedIndex = eventImageList.indexOf(event.image);
   }
   @override
@@ -62,18 +64,7 @@ class _EditEventScreenState extends State<EditEvent> {
     super.dispose();
   }
 
-  /*@override
-  void initState() {
-    super.initState();
-    event =widget.event;
-    nameController = TextEditingController(text: widget.event.eventName);
-    descriptionController =
-        TextEditingController(text: widget.event.description);
-    selectedDate = widget.event.dateTime;
-    selectedTime = parseTime(widget.event.time);
-  }
 
-   */
   List<String> eventImageList=[
     AppAssets.sportImage,
     AppAssets.birthdayImage,
@@ -119,7 +110,7 @@ class _EditEventScreenState extends State<EditEvent> {
         iconTheme: IconThemeData(
             color: AppColors.primaryColor
         ),
-        title: Text('Edit Event', style: AppStyles.med20primary,),
+        title: Text(AppLocalizations.of(context)!.edit_event, style: AppStyles.med20primary,),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -244,7 +235,7 @@ class _EditEventScreenState extends State<EditEvent> {
                 CustomElevatedButton(
                   onPressed:(){
                     saveChanges();
-                    }, text: 'update Event',)
+                    }, text: AppLocalizations.of(context)!.update_event,)
                 ,
               ],
             ),
@@ -325,7 +316,7 @@ class _EditEventScreenState extends State<EditEvent> {
 
     try {
       final updatedEvent = widget.event.copyWith(
-        eventName: eventListProvider.eventNameList[selectedIndex],
+        eventName: eventListProvider.eventNameList[selectedIndex+1],
         description: descriptionController.text,
         dateTime: selectedDate!,
         time: selectedTime!.format(context),
@@ -347,4 +338,5 @@ class _EditEventScreenState extends State<EditEvent> {
       print('Error in saveChanges: $e');
     }
   }
+
 }

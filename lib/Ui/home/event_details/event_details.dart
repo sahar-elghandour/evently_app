@@ -7,10 +7,12 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../../firebase_utils.dart';
 import '../../../model/event.dart';
 import '../../../providers/event_list_provider.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_styles.dart';
+import '../../../utils/toast_utils.dart';
 import '../edit_event/edit_event.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -47,7 +49,7 @@ class _EventDetailsState extends State<EventDetails> {
         iconTheme: IconThemeData(
             color: AppColors.primaryColor
         ),
-        title: Text('Event Details',style: AppStyles.med20primary,),
+        title: Text(AppLocalizations.of(context)!.event_details,style: AppStyles.med20primary,),
         centerTitle: true,
         actions: [
           IconButton(
@@ -64,6 +66,8 @@ class _EventDetailsState extends State<EventDetails> {
           IconButton(
             icon: Icon(Icons.delete,color: AppColors.redColor,),
             onPressed: () {
+
+              deleteEvent();
             },
           )
         ],
@@ -112,5 +116,18 @@ class _EventDetailsState extends State<EventDetails> {
         ),
       ),
     );
+  }
+  Future<void> deleteEvent() async {
+    final userId=Provider.of<UserProvider>
+      (context,listen: false).currentUser!.id;
+
+    await FirebaseUtils.getEventCollection(userId)
+        .doc(widget.event.id).delete();
+
+    ToastUtils.toastMsg(msg: 'event deleted successfully',
+        color: AppColors.primaryColor,
+        textColor: AppColors.whiteColor);
+    await Provider.of<EventListProvider>(context,listen: false).getALLEvents(userId);
+    Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.homeRouteName, (route)=>false);
   }
 }

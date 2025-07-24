@@ -4,6 +4,7 @@ import 'package:evently_app/providers/event_list_provider.dart';
 import 'package:evently_app/utils/app_assets.dart';
 import 'package:evently_app/utils/app_colors.dart';
 import 'package:evently_app/utils/app_styles.dart';
+import 'package:evently_app/utils/app_themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -83,7 +84,7 @@ class _HomeTapState extends State<HomeTap> {
         children:[
           Expanded(
               child: eventListProvider.filterEventList.isEmpty?
-            Center(child: Text("No events added"),): 
+            Center(child: Text("No events added",style:Theme.of(context).textTheme.headlineLarge,),):
          ListView.separated(
                   padding: EdgeInsets.only(top: height*.02),
               itemBuilder: (context, index) {
