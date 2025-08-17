@@ -38,7 +38,8 @@ class LoginScreenViewModel extends ChangeNotifier{
           navigator.hideMyLoading();
           //DialogUtils.hideLoading(context: context);
           //todo:show Msg
-          navigator.showMyMesssage('login successfully');
+          navigator.showMyMesssage('login successfully',title:'success' );
+         // navigator.navigateToHome();
           //DialogUtils.showMsg(context: context, msg:'login successfully',
           //title: 'success',posActionName: 'ok' ,posAction: (){
           // Navigator.pushReplacementNamed(context, AppRoutes.homeRouteName);
@@ -50,7 +51,7 @@ class LoginScreenViewModel extends ChangeNotifier{
             navigator.hideMyLoading();
             // DialogUtils.hideLoading(context: context);
             //todo:show Msg
-            navigator.showMyMesssage(
+            navigator.showMyMesssage(title: 'Error',
                 'The supplied auth credential is incorrect or has expired.');
             //DialogUtils.showMsg(context: context,
             //  msg:'The supplied auth credential is incorrect or has expired.'
@@ -62,8 +63,8 @@ class LoginScreenViewModel extends ChangeNotifier{
           navigator.hideMyLoading();
           //DialogUtils.hideLoading(context: context);
           //todo:show Msg
-          navigator.showMyMesssage(e.toString());
-          //DialogUtils.showMsg(context: context,title: 'Etrror',posActionName: 'ok', msg:e.toString());
+          navigator.showMyMesssage(e.toString(),title: 'Error');
+          //DialogUtils.showMsg(context: context,title: 'Error',posActionName: 'ok', msg:e.toString());
           print(e.toString());
         }
       }

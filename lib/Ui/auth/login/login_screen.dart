@@ -282,8 +282,14 @@ Future<void> loginWithGoogle() async {
   }
 
   @override
-  void showMyMesssage(String message) {
+  void navigateToHome() {
+    // TODO: implement navigateToHome
+    Navigator.pushNamedAndRemoveUntil(context,AppRoutes.homeRouteName,(route)=>false);
+  }
+
+  @override
+  void showMyMesssage(String message, {String? title}) {
     // TODO: implement showMyMesssage
-    DialogUtils.showMsg(context: context, msg: message,posActionName: "ok");
+    DialogUtils.showMsg(context: context, msg: message,posActionName: "ok",title: title);
   }
 }

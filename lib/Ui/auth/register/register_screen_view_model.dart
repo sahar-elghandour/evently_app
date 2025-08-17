@@ -33,7 +33,8 @@ class RegisterScreenViewModel extends ChangeNotifier{
       navigator.hideMyLoading();
      // DialogUtils.hideLoading(context: context);
       //todo:show Msg
-      navigator.showMyMesssage('Register Successfully');
+      navigator.showMyMesssage('Register Successfully',title:'success' );
+      //navigator.navigateToHome();
       //DialogUtils.showMsg(context: context, msg: 'Register Successfully'
          // ,title: 'success',posActionName: 'ok',posAction:(){
           //  Navigator.pushNamedAndRemoveUntil(context,AppRoutes.homeRouteName,(route)=>false);
@@ -44,18 +45,18 @@ class RegisterScreenViewModel extends ChangeNotifier{
       if (e.code == 'weak-password') {
         navigator.hideMyLoading();
         //DialogUtils.hideLoading(context: context);
-        navigator.showMyMesssage('The password provided is too weak.');
+        navigator.showMyMesssage('The password provided is too weak.',title: 'Error');
        // DialogUtils.showMsg(context: context,title: 'Error',posActionName: 'ok',msg: 'The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
         navigator.hideMyLoading();
        // DialogUtils.hideLoading(context: context);
         navigator.showMyMesssage('The account already exists for that email.' );
-       // DialogUtils.showMsg(context: context, title: 'Error',posActionName: 'ok',msg:'The account already exists for that email.' );
+        // DialogUtils.showMsg(context: contextc,posActionName: 'ok',msg:'The account already exists for that email.' );
       }
     } catch (e) {
       navigator.hideMyLoading();
       //DialogUtils.hideLoading(context: context);
-      navigator.showMyMesssage(e.toString());
+      navigator.showMyMesssage(e.toString(),title: 'Error');
       //DialogUtils.showMsg(context: context,title: 'Error',posActionName: 'ok', msg:e.toString() );
       print(e);
     }
